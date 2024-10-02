@@ -16,7 +16,7 @@ args = parser.parse_args()
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 sock.bind(('0.0.0.0', args.port))  # Bind to all interfaces on specified port
 
-sequence_number = 0
+sequence_number = 100
 
 # Read the file to be sent
 file_path = os.path.join(os.getcwd(), 'split.txt')
@@ -53,4 +53,4 @@ while True:
     send_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
     print(f"END Packet\nsend time: {send_time}\nrequester addr: {addr}\nSequence num: {sequence_number}\nlength: 0\npayload: \n")
     
-    break  # Exit after sending one response for simplicity
+    

@@ -14,6 +14,8 @@ args = parser.parse_args()
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 sock.bind(('0.0.0.0', args.port))  # Bind to all interfaces on specified port
 
+# Get the hostname of the current machine
+current_hostname = socket.gethostname()
 # Read tracker file
 tracker_path = os.path.join(os.getcwd(), 'tracker.txt')
 with open(tracker_path, 'r') as tracker_file:
@@ -23,17 +25,23 @@ with open(tracker_path, 'r') as tracker_file:
 file_parts = [line.strip().split() for line in tracker_lines if line.startswith(args.file_option)]
 file_parts.sort(key=lambda x: int(x[1]))  # Sort by ID
 
+# Calculate the total size of all relevant files
+total_size = sum(int(part[4][:-1]) for part in file_parts)  # Remove 'B' and convert to int
+print(total_size)
 received_data = bytearray()
 start_times = {}
 end_times = {}
 packet_counts = {}
 byte_counts = {}
+#need to make the sender host the name of the cs lab 
 
 for part in file_parts:
     filename, id, sender_host, sender_port, size = part
     sender_port = int(sender_port)
     size = int(size[:-1])  # Remove 'B' and convert to int
 
+    # Use the current hostname
+    sender_host = current_hostname
     # Debug information
     print(f"Sending request to {sender_host}:{sender_port}")
 
@@ -51,7 +59,7 @@ for part in file_parts:
         
         if packet_type == b'D':
             received_data.extend(payload)
-            percentage = (len(received_data) / size) * 100
+            percentage = (len(received_data) / total_size) * 100
             print(f"DATA Packet\nrecv time: {recv_time}\nsender addr: {addr[0]}:{addr[1]}\nsequence: {sequence_number}\nlength: {length}\npercentage: {percentage:.2f}%\npayload: {payload[:4].decode(errors='ignore')}\n")
             
             if addr not in start_times:
@@ -84,3 +92,6 @@ for addr in start_times:
 
 # Close the socket
 sock.close()
+
+
+#percentage should be the /the total size of all the files
