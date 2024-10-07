@@ -1,0 +1,1 @@
+The sender will chunk a requested file and send each file chunk via UDP packets to the requester. The requester will receive these packets, subsequently write it to a file and print receipt information. The file transfer is distributed meaning that the requester may need to connect to different senders to get parts of the file and then assemble these parts to get the whole file. 
